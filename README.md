@@ -1,94 +1,163 @@
-# 🚀 Portfolio Server — Setup Guide
+# 🚀 Portfolio — Flask + SQLite (Python)
 
-Your portfolio now uses a **Flask + SQLite backend**.  
-This means when YOU update your portfolio, **everyone** who visits your link sees the changes instantly.
+A complete portfolio website with admin panel, real file uploads,
+contact message inbox, and server-side data storage.
 
 ---
 
-## 📁 Folder Structure
+## 📁 Project Structure
 
 ```
-portfolio_server/
-├── app.py                  ← Flask backend (the server)
-├── portfolio.db            ← SQLite database (auto-created on first run)
-├── requirements.txt        ← Python packages needed
-├── START_SERVER.bat        ← Double-click to start on Windows
-├── start_server.sh         ← Run on Mac/Linux
-├── README.md               ← This file
-└── templates/
-    └── index.html          ← Your portfolio (served by Flask)
+flask_portfolio/
+├── app.py                 ← Flask backend (all API routes)
+├── requirements.txt       ← Python packages
+├── START_SERVER.bat       ← Double-click to run on Windows
+├── start_server.sh        ← Run on Mac/Linux
+├── portfolio.db           ← SQLite database (auto-created)
+├── uploads/               ← Uploaded photos & CV files (auto-created)
+├── templates/
+│   └── index.html         ← Complete portfolio frontend
+└── README.md              ← This file
 ```
 
 ---
 
-## ⚡ Quick Start (Windows)
+## ⚡ Quick Start
 
-### Step 1 — Install Python
-- Download from: https://www.python.org/downloads/
-- ✅ During install, check **"Add Python to PATH"**
+### Windows
+1. Install Python from https://www.python.org ✅ tick **"Add to PATH"**
+2. Double-click **`START_SERVER.bat`**
+3. Open browser → `http://localhost:5000`
 
-### Step 2 — Start the server
-- Double-click **`START_SERVER.bat`**
-- It installs packages and starts automatically
-
-### Step 3 — Open your portfolio
-- Open browser → `http://localhost:5000`
-
-### Step 4 — Share with others (Same Wi-Fi)
-- Find your IP: Open CMD → type `ipconfig` → look for **IPv4 Address**
-- Share: `http://192.168.X.X:5000` (use your actual IP)
-- Anyone on the **same Wi-Fi** can now see your portfolio! ✅
+### Mac / Linux
+```bash
+pip3 install flask flask-cors werkzeug
+python3 app.py
+```
+Then open `http://localhost:5000`
 
 ---
 
-## 🌍 Share with ANYONE on the Internet (Free Hosting)
+## 🌐 Share With Others
 
-To share with people NOT on your Wi-Fi, deploy for free:
+### Same Wi-Fi Network
+1. Find your IP: Open CMD → type `ipconfig` → copy **IPv4 Address**
+2. Share: `http://192.168.X.X:5000`
 
-### Option A — Render.com (Recommended, Free)
-1. Create account at https://render.com
-2. Upload this folder to GitHub
-3. New → Web Service → Connect GitHub repo
-4. Set:
-   - **Build Command:** `pip install -r requirements.txt`
-   - **Start Command:** `python app.py`
-5. Deploy → Get a public URL like `https://myportfolio.onrender.com`
+### Everyone on the Internet (Free Hosting)
 
-### Option B — Railway.app (Also Free)
-1. Create account at https://railway.app
-2. New Project → Deploy from GitHub
-3. Set start command: `python app.py`
-4. Get a public URL instantly
+**PythonAnywhere (Easiest — Free)**
+1. Sign up at https://www.pythonanywhere.com
+2. Go to **Files** → upload all project files
+3. Go to **Web** → Add new web app → Flask
+4. Set source directory to your upload folder
+5. Done! You get `yourname.pythonanywhere.com`
 
-### Option C — PythonAnywhere (Free, India-friendly)
-1. Go to https://www.pythonanywhere.com
-2. Sign up for free account
-3. Go to **Files** → Upload all your files
-4. Go to **Web** → Add a new web app → Flask
-5. Set source code path to your uploaded folder
-6. Done! You get `yourname.pythonanywhere.com`
+**Render.com (Also Free)**
+1. Push project to GitHub
+2. Go to https://render.com → New → Web Service
+3. Connect GitHub repo
+4. Set Build Command: `pip install -r requirements.txt`
+5. Set Start Command: `python app.py`
+6. Deploy → get public URL
 
 ---
 
 ## 🔐 Admin Panel
 
-- Click the **⚙** icon in the footer
-- Default password: **`admin@123`**
-- **Change it** from Admin → Settings → Change Password after first login!
-- Everything you save goes directly to the database on the server
+| Detail | Value |
+|--------|-------|
+| Access | Click **⚙** icon in page footer |
+| Default password | `admin@123` |
+| Change password | Admin → Settings tab |
 
 ---
 
-## 🛠 Manual Commands (if bat file doesn't work)
+## 📋 What You Can Manage
 
-Open CMD in the portfolio_server folder and run:
-```bash
-# Install packages
-pip install flask flask-cors
+| Tab | Features |
+|-----|---------|
+| 👤 Profile | Name, bio, roles (typewriter), photo upload, CV upload |
+| 💡 Skills | Add/delete skills, drag sliders to set level 0–100% |
+| 🚀 Projects | Add/delete projects with tags, live demo & GitHub links |
+| 🏆 Achievements | Add/delete with emoji icons and year |
+| 📸 Gallery | Upload photos directly (real files saved on server) |
+| 📬 Contact | Email, phone, location, all social links |
+| 📩 Messages | Read/reply/delete all contact form messages |
+| ⚙️ Settings | Change password, export/import/reset data |
 
-# Start server
-python app.py
+---
+
+## 📩 Contact Messages
+
+When someone fills your contact form:
+- Message is saved to **SQLite database** on your server
+- You see a **red unread badge** on the 📩 Messages tab
+- Open admin → Messages tab to:
+  - Read all messages
+  - Reply directly via email (opens your email client)
+  - Mark as Read / Unread
+  - Delete individual messages or all at once
+
+---
+
+## 🗃️ Database Structure
+
 ```
+portfolio.db
+├── portfolio table  →  id=1, data (JSON string with all your info)
+└── messages table   →  id, name, email, subject, message, is_read, created_at
+```
+
+---
+
+## 🖼️ File Uploads
+
+All uploads are stored as real files (not base64 blobs):
+
+```
+uploads/
+├── avatar_abc123.jpg    ← your profile photo
+├── cv_def456.pdf        ← your resume
+├── gallery_ghi789.png   ← gallery photo 1
+└── gallery_jkl012.jpg   ← gallery photo 2
+```
+
+**Limits:** Images max 5MB | CV max 10MB | Formats: JPG, PNG, GIF, WEBP (images), PDF/DOC/DOCX (CV)
+
+---
+
+## 🔗 API Routes
+
+| Method | Route | Description |
+|--------|-------|-------------|
+| GET | `/api/ping` | Server health check + unread count |
+| GET | `/api/data` | Get full portfolio data (no password) |
+| POST | `/api/verify-pw` | Verify admin password |
+| POST | `/api/save` | Save portfolio data |
+| POST | `/api/reset` | Reset to defaults |
+| POST | `/api/upload/avatar` | Upload profile photo |
+| POST | `/api/upload/gallery` | Upload gallery photo |
+| POST | `/api/upload/cv` | Upload CV/Resume |
+| POST | `/api/delete/gallery-item` | Delete a gallery photo |
+| POST | `/api/message/send` | Send contact message (public) |
+| GET | `/api/message/list` | List messages (admin) |
+| POST | `/api/message/read` | Mark message read/unread (admin) |
+| POST | `/api/message/delete` | Delete message(s) (admin) |
+
+---
+
+## 🐛 Bugs Fixed vs Old Version
+
+| Old Bug | Fixed |
+|---------|-------|
+| Contact form used `mailto:` — no messages stored | ✅ Saves to SQLite |
+| Photos stored as base64 in JSON blob — huge DB | ✅ Real files in `/uploads/` |
+| CV stored as base64 blob — very large | ✅ Real file in `/uploads/` |
+| `resetData()` didn't call Flask route | ✅ Calls `/api/reset` properly |
+| No `/api/ping` health check | ✅ Added |
+| No messages inbox | ✅ Full CRUD inbox in admin |
+| No server status indicator | ✅ Green/red dot in nav |
 
 ---
 
@@ -96,31 +165,12 @@ python app.py
 
 | Problem | Fix |
 |---------|-----|
-| `pip not found` | Reinstall Python and check "Add to PATH" |
-| `Port 5000 already in use` | Edit `app.py`, change `port=5000` to `port=5001` |
-| Others can't access my link | Make sure you're on the same Wi-Fi + check Windows Firewall |
-| Changes not saving | Make sure admin panel says "✓ Saved" — check Flask console for errors |
-
----
-
-## 📊 How It Works
-
-```
-Browser (Visitor)
-      │
-      │  GET /                → Flask serves index.html
-      │  GET /api/data        → Flask returns your portfolio JSON from DB
-      │
-Flask Server (app.py)
-      │
-      │  Reads/Writes
-      │
-SQLite Database (portfolio.db)
-      │
-      └── Your portfolio content lives here!
-```
-
-Every visitor fetches the latest data from the database, so your updates are instantly visible to everyone.
+| `python not found` | Reinstall Python, tick "Add Python to PATH" |
+| Port 5000 in use | Edit `app.py` → change `port=5000` to `port=5001` |
+| Photos not saving | Make sure `uploads/` folder exists (auto-created on first run) |
+| Admin password forgotten | Delete `portfolio.db` → restart server → default `admin@123` restored |
+| Changes not visible to others | Make sure server is running on `0.0.0.0` (already set in `app.py`) |
+| `Module not found` error | Run `pip install flask flask-cors werkzeug` |
 
 ---
 
