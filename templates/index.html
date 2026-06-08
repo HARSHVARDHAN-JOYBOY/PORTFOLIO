@@ -1115,11 +1115,33 @@ function saveContact(){
 }
 
 async function changePw(){
-  var p1=gv('pw1'),p2=gv('pw2');
+  var p1=gv('pw1'), p2=gv('pw2');
   if(!p1||p1.length<4){ notif('⚠ Password must be at least 4 characters',true); return; }
   if(p1!==p2){ notif('⚠ Passwords do not match',true); return; }
-  D.pw=p1; _pw=p1; scheduleSave();
-  sv('pw1',''); sv('pw2',''); notif('✓ Password changed!');
+
+  var oldPw = _pw;   // keep current auth password safe
+  D.pw = p1;         // put new password into data
+
+  try{
+    // ── Authenticate with OLD password, save data containing NEW password ──
+    var r = await fetch('/api/save',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({pw: oldPw, data: D})
+    });
+    if(r.ok){
+      _pw = p1;   // server accepted — now update session password
+      clearTimeout(_saveTimer); // cancel any pending scheduleSave
+      sv('pw1',''); sv('pw2','');
+      notif('✓ Password changed successfully!');
+    } else {
+      D.pw = oldPw;  // revert data password — server rejected
+      notif('⚠ Password change failed — try again',true);
+    }
+  }catch(e){
+    D.pw = oldPw;    // revert on network error
+    notif('⚠ Server error — could not change password',true);
+  }
 }
 
 // ── FILE UPLOADS ──────────────────────────────────────────────────
